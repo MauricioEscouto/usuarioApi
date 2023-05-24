@@ -1,5 +1,7 @@
+using Application.UseCase.Pessoa.Abstractions;
 using Microsoft.AspNetCore.Mvc;
 using usuarioApi.Shared.Entities;
+using usuarioApi.UseCase.Pessoa.Models;
 
 namespace usuarioApi.Controllers
 {
@@ -7,28 +9,32 @@ namespace usuarioApi.Controllers
     [Route("api/[controller]")]
     public class PessoaController : ControllerBase
     {
-        private static readonly string[] Summaries = new[]
-        {
-        "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-        ;
+        private readonly IPessoaUseCase _useCasePessoa;
+        //private readonly IAtualizarDispositivo _useCaseAtualizarDispositivo;
+        //private readonly IDeletarDispositivo _useCaseDeletarDispositivo;
+        //private readonly IObterDispositivo _useCaseObterDispositivo;
 
-        private readonly ILogger<WeatherForecastController> _logger;
-
-        public PessoaController(ILogger<WeatherForecastController> logger)
+        public PessoaController(IPessoaUseCase useCasePessoa/*, IDeletarDispositivo useCaseDeletarDispositivo, IObterDispositivo useCaseObterDispositivo, IAtualizarDispositivo useCaseAtualizarDispositivo*/)
         {
-            _logger = logger;
+            _useCasePessoa = useCasePessoa;
+            //_useCaseDeletarDispositivo = useCaseDeletarDispositivo;
+            //_useCaseObterDispositivo = useCaseObterDispositivo;
+            //_useCaseAtualizarDispositivo = useCaseAtualizarDispositivo;
         }
 
-        [HttpGet(Name = "GetWeatherForecast")]
-        public IEnumerable<WeatherForecast> Get()
+        [HttpGet("ObterTodos")]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        public async Task<IActionResult> ObterPessoas(CancellationToken cancellationToken)
         {
-            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
-            {
-                Date = DateTime.Now.AddDays(index),
-                TemperatureC = Random.Shared.Next(-20, 55),
-                Summary = Summaries[Random.Shared.Next(Summaries.Length)]
-            })
-            .ToArray();
+            return await _useCasePessoa.ExecuteAsyncObterUsuarios(cancellationToken);
+        }
+
+        [HttpPost]
+        [Route("Criar")]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        public async Task<IActionResult> CriarPessoa([FromBody] PessoaRequest request, CancellationToken cancellationToken)
+        {
+            return await _useCasePessoa.ExecuteAsyncCriarUsuario(request, cancellationToken);
         }
     }
 }

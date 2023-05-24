@@ -1,4 +1,5 @@
-﻿using usuarioApi.UseCase.Pessoa.Repositories;
+﻿using Application.UseCase.Pessoa.Abstractions;
+using usuarioApi.UseCase.Pessoa.Repositories;
 using usuarioApi.UseCase.Pessoa.Repositories.Abstractions;
 
 namespace usuarioApi.UseCase.Pessoa
@@ -9,7 +10,7 @@ namespace usuarioApi.UseCase.Pessoa
         {
             return services
                 .AddScoped<IPessoaRepository, PessoaRepository>()
-                .AddScoped<IAtualizarDispositivo, AtualizarDispositivoUseCase>();
+                .AddScoped<IPessoaUseCase, PessoaUseCase>();
         }
     }
 }

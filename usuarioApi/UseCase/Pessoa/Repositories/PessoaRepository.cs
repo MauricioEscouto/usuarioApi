@@ -13,15 +13,22 @@ namespace usuarioApi.UseCase.Pessoa.Repositories
     {
         private readonly IDbConnectionFactory _dbConnectionFactory;
         private readonly DbContext _dbContext;
-        private readonly ILogger _logger;
 
-        public PessoaRepository(IDbConnectionFactory dbConnectionFactory, ILogger logger)
+        public PessoaRepository(IDbConnectionFactory dbConnectionFactory)
         {
             _dbConnectionFactory = dbConnectionFactory;
             _dbContext = _dbConnectionFactory.ObterContexto(AppSettingsConstantes.DB_RODOSOFT_ADM);
-            _logger = logger;
         }
-        
+
+        public async Task<List<PessoaRequest>> ObterPessoas(CancellationToken cancellationToken)
+        {
+            var connection = _dbContext.connection;
+            var querys = _dbContext.sqlQuery;
+
+            IEnumerable<PessoaRequest> pessoas = await connection.QueryAsync<PessoaRequest>(querys.ObterPessoas(), cancellationToken);
+            return pessoas.ToList();
+        }
+
         public Task CriarPessoa(PessoaRequest pessoaRequest, CancellationToken cancellationToken)
         {
             var connection = _dbContext.connection;
@@ -30,35 +37,35 @@ namespace usuarioApi.UseCase.Pessoa.Repositories
             if (pessoaRequest.EnumTipoDocumento == EnumTipoDocumento.CPF)
             {
                 PessoaFisica pessoaFisica = new PessoaFisica(pessoaRequest);
-                connection.Execute(querys.CriarDispositivo(), pessoaFisica);
+                connection.Execute(querys.CriarPessoa(EnumTipoDocumento.CPF), pessoaFisica);
             }
             else if (pessoaRequest.EnumTipoDocumento == EnumTipoDocumento.CNPJ)
             {
                 PessoaJuridica pessoaJuridica = new PessoaJuridica(pessoaRequest);
-                connection.Execute(querys.CriarDispositivo(), pessoaJuridica);
+                connection.Execute(querys.CriarPessoa(EnumTipoDocumento.CNPJ), pessoaJuridica);
             }
             return Task.CompletedTask;
         }
 
         public Task AtualizarPessoa(int id, object Pessoa, CancellationToken cancellationToken)
         {
-            var connection = _dbContext.connection;
-            var querys = _dbContext.sqlCommand;
+            //var connection = _dbContext.connection;
+            //var querys = _dbContext.sqlCommand;
 
-            _logger.SalvarLog(idProjeto: dispositivo.IdProjeto, idRegistro: id, observacao: $"DISPOSITIVO REATIVADO ---- {dispositivo}");
+            //_logger.SalvarLog(idProjeto: dispositivo.IdProjeto, idRegistro: id, observacao: $"DISPOSITIVO REATIVADO ---- {dispositivo}");
 
-            connection.Execute(querys.ReativarDispositivo(id, dataBloqueio));
+            //connection.Execute(querys.ReativarDispositivo(id, dataBloqueio));
             return Task.CompletedTask;
         }
 
         public Task ExcluirPessoa(int id, CancellationToken cancellationToken)
         {
-            var connection = _dbContext.connection;
-            var querys = _dbContext.sqlCommand;
+            //var connection = _dbContext.connection;
+            //var querys = _dbContext.sqlCommand;
 
-            _logger.SalvarLog(idProjeto: dispositivo.IdProjeto, idRegistro: id, observacao: $"DISPOSITIVO REATIVADO ---- {dispositivo}");
+            //_logger.SalvarLog(idProjeto: dispositivo.IdProjeto, idRegistro: id, observacao: $"DISPOSITIVO REATIVADO ---- {dispositivo}");
 
-            connection.Execute(querys.ReativarDispositivo(id, dataBloqueio));
+            //connection.Execute(querys.ReativarDispositivo(id, dataBloqueio));
             return Task.CompletedTask;
         }
     }
